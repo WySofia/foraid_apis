@@ -1,0 +1,38 @@
+{
+    "name": "foraid_apis-1",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/WySofia/foraid_apis.git",
+    "author": "Washington Yandun <81931984+WashingtonYandun@users.noreply.github.com>",
+    "license": "MIT",
+    "scripts": {
+        "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format": "prettier --write 'src/**/*.{ts,js,json}''",
+        "test": "vitest"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.12.0",
+        "@types/express": "^5.0.0",
+        "@types/node": "^22.7.5",
+        "eslint": "^9.12.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "globals": "^15.11.0",
+        "nodemon": "^3.1.7",
+        "prettier": "^3.3.3",
+        "ts-node": "^10.9.2",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.6.3",
+        "typescript-eslint": "^8.8.1",
+        "vite": "^5.4.8",
+        "vitest": "^2.1.2"
+    },
+    "dependencies": {
+        "express": "^4.21.1",
+        "pg": "^8.13.0"
+    }
+}
