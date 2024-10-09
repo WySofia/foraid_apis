@@ -5,18 +5,17 @@ export default defineConfig({
         globals: true,
         environment: 'node',
         include: [
-            'src/**/*.test.ts',
-            'src/**/*.test.tsx',
-            'src/**/*.spec.ts',
-            'src/**/*.spec.tsx',
+            'tests/**/*.test.ts',
+            'tests/**/*.test.tsx',
+            'tests/**/*.spec.ts',
+            'tests/**/*.spec.tsx',
         ],
         coverage: {
             reporter: ['text', 'lcov'],
             reportsDirectory: './coverage',
             exclude: [
-                'src/components/ui/button.tsx',
                 '**/*.config.js',
-                'vite.config.ts',
+                'vite.config.mts',
                 'src/lib/**/*.ts',
                 'src/main.tsx',
                 'src/index.tsx',
