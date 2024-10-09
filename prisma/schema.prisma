@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id_usuario       Int     @id @default(autoincrement())
+  nombre           String
+  apellido         String
+  correo           String  @unique
+  contrasenia_hash String
+  cargo            String?
+  rango            String?
+  Casos            Casos[]
+}
+
+model TipoCaso {
+  id_tipo_caso Int     @id @default(autoincrement())
+  nombre       String  @unique
+  Casos        Casos[]
+}
+
+model MetodoCreacion {
+  id_metodo_creacion Int          @id @default(autoincrement())
+  nombre             String       @unique
+  Identikits         Identikits[]
+}
+
+model Casos {
+  id_caso          Int          @id @default(autoincrement())
+  id_usuario       Int
+  fecha            DateTime
+  titulo           String
+  descripcion      String?
+  id_tipo_caso     Int
+  calle_principal  String?
+  calle_secundaria String?
+  provincia        String?
+  canton           String?
+  tipoCaso         TipoCaso     @relation(fields: [id_tipo_caso], references: [id_tipo_caso])
+  usuario          Usuario      @relation(fields: [id_usuario], references: [id_usuario])
+  Identikits       Identikits[]
+}
+
+model Identikits {
+  id_identikit       Int               @id @default(autoincrement())
+  id_caso            Int
+  fecha_creacion     DateTime
+  id_metodo_creacion Int
+  imagen             String?
+  Caracteristicas    Caracteristicas[]
+  caso               Casos             @relation(fields: [id_caso], references: [id_caso])
+  metodoCreacion     MetodoCreacion    @relation(fields: [id_metodo_creacion], references: [id_metodo_creacion])
+}
+
+model Caracteristicas {
+  id_caracteristica     Int        @id @default(autoincrement())
+  id_identikit          Int
+  nombre_caracteristica String
+  descripcion           String?
+  identikit             Identikits @relation(fields: [id_identikit], references: [id_identikit])
+}
