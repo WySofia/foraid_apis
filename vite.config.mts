@@ -16,6 +16,7 @@ export default defineConfig({
             exclude: [
                 '**/*.config.js',
                 'vite.config.mts',
+                'eslint.config.mjs',
                 'src/lib/**/*.ts',
                 'src/main.tsx',
                 'src/index.tsx',

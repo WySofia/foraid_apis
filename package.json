@@ -12,12 +12,14 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write 'src/**/*.{ts,js,json}''",
-        "test": "vitest"
+        "test": "vitest",
+        "coverage": "vitest --coverage"
     },
     "devDependencies": {
         "@eslint/js": "^9.12.0",
         "@types/express": "^5.0.0",
         "@types/node": "^22.7.5",
+        "@vitest/coverage-v8": "^2.1.2",
         "eslint": "^9.12.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-prettier": "^5.2.1",
