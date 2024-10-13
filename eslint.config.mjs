@@ -9,7 +9,10 @@ export default [
     ...tseslint.configs.recommended,
     {
         rules: {
-            'no-unused-vars': 'error',
+            "no-unused-vars": [
+                "error",
+                { "argsIgnorePattern": "^_", "varsIgnorePattern": "^value$" }
+            ],
             'no-trailing-spaces': 'error',
             'no-underscore-dangle': 'error',
             'no-console': 'error',
