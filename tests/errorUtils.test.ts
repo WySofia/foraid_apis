@@ -46,6 +46,27 @@ describe('errorUtils', () => {
             expect(error.message).toContain('Invalid input');
         });
 
+        it('handles LogicError correctly', () => {
+            const error = handleError(
+                'LogicError',
+                new Error('Division by zero')
+            );
+            expect(error.tag).toBe('LogicError');
+            expect(error.message).toContain('Division by zero');
+        });
+
+        it('handles DataError correctly', () => {
+            const error = handleError('DataError', new Error('Empty data'));
+            expect(error.tag).toBe('DataError');
+            expect(error.message).toContain('Empty data');
+        });
+
+        it('handles ApiError correctly', () => {
+            const error = handleError('ApiError', new Error('API failed'));
+            expect(error.tag).toBe('ApiError');
+            expect(error.message).toContain('API failed');
+        });
+
         it('returns UnknownError for unsupported tags', () => {
             const error = handleError('UnknownError', 'An unknown issue');
             expect(error.tag).toBe('UnknownError');
