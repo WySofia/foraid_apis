@@ -1,3 +1,3 @@
 import express from 'express';
 
-export const apis = express();
+export const app = express();
