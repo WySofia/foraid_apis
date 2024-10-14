@@ -15,7 +15,6 @@ export const CasosSchema = z.object({
             if (typeof arg === 'string' || arg instanceof Date) {
                 return new Date(arg);
             }
-            return arg;
         }, z.any())
         .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
             message: 'La fecha debe ser una fecha válida.',

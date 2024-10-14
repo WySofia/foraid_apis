@@ -31,7 +31,7 @@ describe('createAccessToken', () => {
     it('should reject with an error if jwt.sign fails', async () => {
         vi.spyOn(jwt, 'sign').mockImplementation(
             (payload, secret, options, callback) => {
-                callback(new Error('Token generation error'), null);
+                callback(new Error('Token generation error'), '');
             }
         );
 

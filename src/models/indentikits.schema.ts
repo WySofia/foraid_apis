@@ -14,7 +14,6 @@ export const IdentikitsSchema: z.ZodSchema = z.object({
             if (typeof arg === 'string' || arg instanceof Date) {
                 return new Date(arg);
             }
-            return arg;
         }, z.any())
         .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
             message: 'La fecha de creación debe ser una fecha válida.',

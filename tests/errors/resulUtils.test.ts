@@ -7,6 +7,7 @@ import {
     mapErr,
     flatMap,
     fold,
+    tryCatch,
 } from '../../src/errors/resultUtils';
 import { DataError, CustomError } from '../../src/errors/errorTypes';
 
@@ -98,6 +99,64 @@ describe('resultUtils', () => {
                 (error) => `Error: ${error.message}`
             );
             expect(result).toBe('Error: Test failure');
+        });
+    });
+
+    describe('tryCatch', () => {
+        const successFn = async () => 42;
+        const failureFn = async () => {
+            throw new Error('Test error');
+        };
+
+        const mapError = (error: unknown): CustomError => ({
+            tag: 'LogicError',
+            message: error instanceof Error ? error.message : 'Unknown error',
+        });
+
+        it('returns Ok result when function resolves successfully', async () => {
+            const result = await tryCatch(successFn, mapError);
+            expect(result).toEqual(ok(42));
+        });
+
+        it('returns Err result when function throws an error', async () => {
+            const result = await tryCatch(failureFn, mapError);
+            expect(result).toEqual(
+                err<CustomError>({
+                    tag: 'LogicError',
+                    message: 'Test error',
+                })
+            );
+        });
+
+        it('handles unknown errors gracefully', async () => {
+            const faultyFn = async () => {
+                throw null;
+            };
+            const result = await tryCatch(faultyFn, mapError);
+            expect(result).toEqual(
+                err<CustomError>({
+                    tag: 'LogicError',
+                    message: 'Unknown error',
+                })
+            );
+        });
+
+        it('works with custom error mapping logic', async () => {
+            const customMapError = (error: unknown): DataError => ({
+                tag: 'DataError',
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : 'Custom error handling',
+            });
+
+            const result = await tryCatch(failureFn, customMapError);
+            expect(result).toEqual(
+                err<DataError>({
+                    tag: 'DataError',
+                    message: 'Test error',
+                })
+            );
         });
     });
 });
