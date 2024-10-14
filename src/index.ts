@@ -1,4 +1,5 @@
-import helmet from 'helmet';
 import { app } from './app';
+import { authRouter } from './routes/auth.routes';
 
-app.use(helmet.hidePoweredBy());
+app.listen(3000);
+app.use(authRouter);
