@@ -24,7 +24,7 @@ export const handleError = (tag: ErrorTag, error: unknown): CustomError => {
         case 'ValidationError':
             return createError(tag, `Error validando los campos: ${message}`);
         case 'LogicError':
-            return createError(tag, `Error en operaciones lógicas: ${message}`);
+            return createError(tag, `Error lógico: ${message}`);
         case 'DataError':
             return createError(
                 tag,
