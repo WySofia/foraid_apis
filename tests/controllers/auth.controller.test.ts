@@ -1,15 +1,8 @@
 // tests/controllers/auth.controller.test.ts
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-    register,
-    login,
-    verifyToken,
-    logout,
-} from '../../src/controllers/auth.controller';
+import { register, login, logout } from '../../src/controllers/auth.controller';
 import * as prismaModule from '../../src/db';
-import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
 import * as resultUtils from '../../src/errors/resultUtils';
 import * as jwtLib from '../../src/libs/jwt';
 
