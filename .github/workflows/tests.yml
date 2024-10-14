@@ -27,9 +27,9 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_USER: ${{ secrets.db_user }}
-          POSTGRES_PASSWORD: ${{ secrets.db_password }}
-          POSTGRES_DB: ${{ secrets.db_name }}
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: mydatabase
         options: >-
           --health-cmd="pg_isready -U user"
           --health-interval=10s
@@ -37,7 +37,7 @@ jobs:
           --health-retries=5
 
     env:
-      DATABASE_URL: postgres://user:${{ secrets.db_password }}@localhost:5432/${{ secrets.db_name }}
+      DATABASE_URL: postgres://user:password@localhost:5432/mydatabase
 
     steps:
       - name: Check out code
