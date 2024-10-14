@@ -1,23 +1,24 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { PrismaClient } from '@prisma/client';
+import { prisma } from '../src/db';
 
-let prisma: PrismaClient;
+let myPrisma: PrismaClient;
 
 beforeAll(() => {
-    prisma = new PrismaClient();
+    myPrisma = prisma;
 });
 
 afterAll(async () => {
-    await prisma.$disconnect();
+    await myPrisma.$disconnect();
 });
 
 describe('PrismaClient', () => {
     it('should initialize PrismaClient without errors', () => {
-        expect(prisma).toBeDefined();
+        expect(myPrisma).toBeDefined();
     });
 
     it('should fetch an empty list of users', async () => {
-        const users = await prisma.usuario.findMany();
+        const users = await myPrisma.usuario.findMany();
         expect(users).toBeInstanceOf(Array);
     });
 
