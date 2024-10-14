@@ -1,13 +1,11 @@
-import express from 'express';
+import { apis } from './app';
 
-const app = express();
-
-app.get('/', (req, res) => {
+apis.get('/', (req, res) => {
     res.send({
-        message: 'Hello World!',
+        message: 'Welcome to the APIs!',
     });
 });
 
-app.listen(3000, () => {
-    console.log('App is running on port 3000');
+apis.listen(3000, () => {
+    console.log('APIs are running on http://localhost:3000');
 });
