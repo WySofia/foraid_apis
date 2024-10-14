@@ -8,14 +8,6 @@ on:
     pull_request:
         types: [opened, synchronize, reopened]
 
-name: Tests
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
-
 jobs:
   tests:
     name: Run Tests
