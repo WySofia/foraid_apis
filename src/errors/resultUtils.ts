@@ -24,6 +24,18 @@ export const flatMap = <T, U, E extends CustomError, F extends CustomError>(
     fn: (_value: T) => Result<U, F>
 ): Result<U, E | F> => (isOk(result) ? fn(result.value) : result);
 
+export const tryCatch = async <T, E extends CustomError>(
+    fn: () => Promise<T>,
+    mapError: (_error: unknown) => E
+): Promise<Result<T, E>> => {
+    try {
+        const result = await fn();
+        return ok(result);
+    } catch (error) {
+        return err(mapError(error));
+    }
+};
+
 export const fold = <T, E extends CustomError, U>(
     result: Result<T, E>,
     onOk: (_value: T) => U,
