@@ -8,18 +8,58 @@ on:
     pull_request:
         types: [opened, synchronize, reopened]
 
+name: Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
 jobs:
-    tests:
-        name: Run Tests
-        runs-on: ubuntu-latest
+  tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
 
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: ${{ secrets.db_user }}
+          POSTGRES_PASSWORD: ${{ secrets.db_password }}
+          POSTGRES_DB: ${{ secrets.db_name }}
+        options: >-
+          --health-cmd="pg_isready -U user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
-            - name: Install dependencies
-              run: yarn install
+    env:
+      DATABASE_URL: postgres://user:${{ secrets.db_password }}@localhost:5432/${{ secrets.db_name }}
 
-            - name: Run tests with coverage
-              run: yarn test --coverage
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -U user; do
+            echo "Waiting for PostgreSQL...";
+            sleep 1;
+          done
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Apply database migrations
+        run: npx prisma migrate deploy
+
+      - name: Run tests with coverage
+        run: yarn test --coverage
