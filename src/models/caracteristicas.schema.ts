@@ -4,6 +4,6 @@ export const caracteristicasSchema = z.object({
     id_identikit: z.number().int(),
     nombre_caracteristica: z
         .string()
-        .min(1, 'El nombre de la característica es obligatorio'),
+        .min(3, 'El nombre de la característica es obligatorio'),
     descripcion: z.string().optional(),
 });
