@@ -4,8 +4,8 @@ import {
     getErrorMessage,
     createError,
     handleError,
-} from '../src/errors/errorUtils';
-import { ApiError } from '../src/errors/errorTypes';
+} from '../../src/errors/errorUtils';
+import { ApiError } from '../../src/errors/errorTypes';
 
 describe('errorUtils', () => {
     describe('getErrorMessage', () => {

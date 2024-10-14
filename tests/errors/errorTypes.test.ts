@@ -6,7 +6,7 @@ import {
     ApiError,
     ValidationError,
     CustomError,
-} from '../src/errors/errorTypes';
+} from '../../src/errors/errorTypes';
 
 describe('ErrorTypes', () => {
     describe('LogicError', () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { ok, err } from '../src/errors/result';
-import { CustomError } from '../src/errors/errorTypes';
+import { ok, err } from '../../src/errors/result';
+import { CustomError } from '../../src/errors/errorTypes';
 
 describe('result', () => {
     describe('ok', () => {

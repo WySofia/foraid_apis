@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ok, err } from '../src/errors/result';
+import { ok, err } from '../../src/errors/result';
 import {
     isOk,
     isErr,
@@ -7,8 +7,8 @@ import {
     mapErr,
     flatMap,
     fold,
-} from '../src/errors/resultUtils';
-import { DataError, CustomError } from '../src/errors/errorTypes';
+} from '../../src/errors/resultUtils';
+import { DataError, CustomError } from '../../src/errors/errorTypes';
 
 describe('resultUtils', () => {
     const success = ok(10);
