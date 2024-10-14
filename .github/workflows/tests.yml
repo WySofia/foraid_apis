@@ -9,49 +9,49 @@ on:
         types: [opened, synchronize, reopened]
 
 jobs:
-  tests:
-    name: Run Tests
-    runs-on: ubuntu-latest
+    tests:
+        name: Run Tests
+        runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:latest
-        ports:
-          - 5432:5432
+        services:
+            postgres:
+                image: postgres:latest
+                ports:
+                    - 5432:5432
+                env:
+                    POSTGRES_USER: user
+                    POSTGRES_PASSWORD: password
+                    POSTGRES_DB: mydatabase
+                options: >-
+                    --health-cmd="pg_isready -U user"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=5
+
         env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: mydatabase
-        options: >-
-          --health-cmd="pg_isready -U user"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+            DATABASE_URL: postgres://user:password@localhost:5432/mydatabase
 
-    env:
-      DATABASE_URL: postgres://user:password@localhost:5432/mydatabase
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+            - name: Wait for PostgreSQL
+              run: |
+                  until pg_isready -h localhost -U user; do
+                    echo "Waiting for PostgreSQL...";
+                    sleep 1;
+                  done
 
-      - name: Wait for PostgreSQL
-        run: |
-          until pg_isready -h localhost -U user; do
-            echo "Waiting for PostgreSQL...";
-            sleep 1;
-          done
+            - name: Install dependencies
+              run: yarn install
 
-      - name: Install dependencies
-        run: yarn install
+            - name: Generate Prisma Client
+              run: npx prisma generate
 
-      - name: Generate Prisma Client
-        run: npx prisma generate
+            - name: Apply database migrations
+              run: npx prisma migrate deploy
 
-      - name: Apply database migrations
-        run: npx prisma migrate deploy
-
-      - name: Run tests with coverage
-        run: yarn test --coverage
+            - name: Run tests with coverage
+              run: yarn test --coverage
