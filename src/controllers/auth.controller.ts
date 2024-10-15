@@ -72,9 +72,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     try {
         const token = await createAccessToken({
             id_usuario: user.id_usuario,
-            nombre: user.nombre,
-            apellido: user.apellido,
-            correo: user.correo,
         });
         res.cookie('token', token, {
             httpOnly: true,
@@ -138,9 +135,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     try {
         const token = await createAccessToken({
             id_usuario: user.id_usuario,
-            nombre: user.nombre,
-            apellido: user.apellido,
-            correo: user.correo,
         });
 
         res.cookie('token', token, {
@@ -158,35 +152,32 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const verifyToken = async (
     req: Request,
     res: Response
-): Promise<Response | void> => {
-    const { token } = req.cookies;
+): Promise<void> => {
+    const token = req.cookies['token'] as string;
 
-    if (!token) {
-        return res.status(401).send(false);
+    if (typeof token === 'string' || token === null || token === undefined) {
+        res.status(401).json({ message: 'No token, No autorizado' });
+        return;
     }
 
-    try {
-        const decoded = jwt.verify(token, TOKEN_SECRET) as jwt.JwtPayload;
+    jwt.verify(token, TOKEN_SECRET, async (error: any, user: any) => {
+        if (error) return res.sendStatus(401);
 
-        const user = await prisma.usuario.findUnique({
-            where: { id_usuario: decoded.id_usuario },
+        const userFound = await prisma.usuario.findUnique({
+            where: { id_usuario: user.id_usuario },
         });
 
-        if (!user) {
-            return res
-                .status(401)
-                .send(handleError('DataError', 'Usuario no encontrado'));
+        if (!userFound) {
+            res.status(401).json({ message: 'No autorizado' });
+            return;
         }
 
         return res.json({
-            id: user.id_usuario,
-            username: user.nombre,
-            email: user.correo,
+            id: userFound.id_usuario,
         });
-    } catch (error) {
-        return res.status(401).send(handleError('DataError', error));
-    }
+    });
 };
+
 export const logout = async (req: Request, res: Response) => {
     res.cookie('token', '', {
         httpOnly: true,

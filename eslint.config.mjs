@@ -19,6 +19,7 @@ export default [
             'no-trailing-spaces': 'error',
             'no-underscore-dangle': 'error',
             'no-console': 'error',
+            '@typescript-eslint/no-explicit-any': 'off',
         },
     },
 ];
