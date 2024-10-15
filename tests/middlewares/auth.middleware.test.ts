@@ -8,7 +8,7 @@ vi.mock('jsonwebtoken');
 describe('auth middleware', () => {
     const TOKEN_SECRET = 'testsecret';
 
-    const mockRequest = (cookies: any): Request => {
+    const mockRequest = (cookies: unknown): Request => {
         return {
             cookies,
         } as Request;
@@ -39,8 +39,8 @@ describe('auth middleware', () => {
         const req = mockRequest({ token: 'invalidtoken' });
         const res = mockResponse();
 
-        (jwt.verify as any).mockImplementation(
-            (token: string, secret: string, callback: any) => {
+        (jwt.verify as unknown).mockImplementation(
+            (token: string, secret: string, callback: unknown) => {
                 callback(new Error('Token is not valid'), null);
             }
         );
@@ -58,8 +58,8 @@ describe('auth middleware', () => {
         const res = mockResponse();
 
         const mockUser = { id: 1, name: 'Test User' };
-        (jwt.verify as any).mockImplementation(
-            (token: string, secret: string, callback: any) => {
+        (jwt.verify as unknown).mockImplementation(
+            (token: string, secret: string, callback: unknown) => {
                 callback(null, mockUser);
             }
         );
@@ -74,7 +74,7 @@ describe('auth middleware', () => {
         const req = mockRequest({ token: 'validtoken' });
         const res = mockResponse();
 
-        (jwt.verify as any).mockImplementation(() => {
+        (jwt.verify as unknown).mockImplementation(() => {
             throw new Error('Unexpected error');
         });
 
