@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import { CaracteristicasSchema } from './caracteristicas.schema';
 
-export const IdentikitsSchema: z.ZodSchema = z.object({
+export const IdentikitSchema: z.ZodSchema = z.object({
     id_identikit: z.number().optional(),
 
     id_caso: z.number({
@@ -30,5 +29,22 @@ export const IdentikitsSchema: z.ZodSchema = z.object({
         .url({ message: 'La imagen debe ser una URL válida.' })
         .optional(),
 
-    Caracteristicas: z.array(CaracteristicasSchema).optional(),
+    Caracteristicas: z
+        .array(
+            z.object({
+                id_caracteristica: z.number().optional(),
+                id_identikit: z.number(),
+                nombre_caracteristica: z
+                    .string()
+                    .min(1, { message: 'El nombre es requerido.' }),
+                descripcion: z
+                    .string()
+                    .max(500, {
+                        message:
+                            'La descripción no puede exceder 500 caracteres.',
+                    })
+                    .optional(),
+            })
+        )
+        .optional(),
 });
