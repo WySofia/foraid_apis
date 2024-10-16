@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { UsuarioSchema } from './usuario.schema';
 import { TipoCasoSchema } from './tipoCaso.schema';
 
-export const CasosSchema = z.object({
+export const CasosSchema: z.ZodSchema = z.object({
     id_caso: z.number().optional(),
 
     id_usuario: z.number({
