@@ -160,7 +160,7 @@ export const verifyToken = async (
         return;
     }
 
-    jwt.verify(token, TOKEN_SECRET, async (error: any, user: any) => {
+    jwt.verify(token, TOKEN_SECRET, async (error: any, user: unknown) => {
         if (error) return res.sendStatus(401);
 
         const userFound = await prisma.usuario.findUnique({

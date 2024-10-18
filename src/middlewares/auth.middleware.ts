@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 
 declare module 'express' {
     export interface Request {
-        usuario?: any;
+        usuario?: unknown;
     }
 }
 
@@ -17,7 +17,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
             return;
         }
 
-        jwt.verify(token, TOKEN_SECRET, (error: any, usuario: any) => {
+        jwt.verify(token, TOKEN_SECRET, (error: unknown, usuario: unknown) => {
             if (error) {
                 return res.status(401).json({ message: 'Token is not valid' });
             }

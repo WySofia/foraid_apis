@@ -28,7 +28,7 @@ vi.mock('../../src/db', () => ({
 
 vi.mock('../../src/errors/resultUtils', () => ({
     tryCatch: vi.fn(),
-    isErr: (result: any) => result.type === 'err',
+    isErr: (result: unknown) => result.type === 'err',
 }));
 
 vi.mock('../../src/libs/jwt', () => ({
@@ -37,9 +37,9 @@ vi.mock('../../src/libs/jwt', () => ({
 }));
 
 describe('Auth Controller', () => {
-    let req: any;
-    let res: any;
-    let prisma: any;
+    let req: unknown;
+    let res: unknown;
+    let prisma: unknown;
 
     beforeEach(() => {
         req = { body: {}, cookies: {} };
