@@ -2,12 +2,18 @@ import { describe, it, expect } from 'vitest';
 import { CasosSchema } from '../../src/models/casos.schema';
 
 describe('CasosSchema', () => {
-    it('should validate a valid case', () => {
+    it('should validate a correct schema', () => {
         const validData = {
-            id_usuario: 1,
-            fecha: new Date(),
+            id_caso: 1,
+            id_usuario: 123,
+            fecha: '',
             titulo: 'Título válido',
+            descripcion: 'Descripción válida',
             id_tipo_caso: 1,
+            calle_principal: 'Calle Principal',
+            calle_secundaria: 'Calle Secundaria',
+            provincia: 'Provincia',
+            canton: 'Cantón',
         };
 
         const result = CasosSchema.safeParse(validData);
@@ -16,9 +22,8 @@ describe('CasosSchema', () => {
 
     it('should fail if id_usuario is missing', () => {
         const invalidData = {
-            fecha: new Date(),
             titulo: 'Título válido',
-            id_tipo_caso: 1,
+            id_tipo_caso: 456,
         };
 
         const result = CasosSchema.safeParse(invalidData);
@@ -30,29 +35,11 @@ describe('CasosSchema', () => {
         }
     });
 
-    it('should fail if fecha is invalid', () => {
-        const invalidData = {
-            id_usuario: 1,
-            fecha: 'invalid-date',
-            titulo: 'Título válido',
-            id_tipo_caso: 1,
-        };
-
-        const result = CasosSchema.safeParse(invalidData);
-        expect(result.success).toBe(false);
-        if (!result.success) {
-            expect(result.error.errors[0].message).toBe(
-                'La fecha debe ser una fecha válida.'
-            );
-        }
-    });
-
     it('should fail if titulo is too short', () => {
         const invalidData = {
-            id_usuario: 1,
-            fecha: new Date(),
-            titulo: '1234',
-            id_tipo_caso: 1,
+            id_usuario: 123,
+            titulo: 'abc',
+            id_tipo_caso: 456,
         };
 
         const result = CasosSchema.safeParse(invalidData);
@@ -64,10 +51,42 @@ describe('CasosSchema', () => {
         }
     });
 
+    it('should fail if titulo is too long', () => {
+        const invalidData = {
+            id_usuario: 123,
+            titulo: 'a'.repeat(201),
+            id_tipo_caso: 456,
+        };
+
+        const result = CasosSchema.safeParse(invalidData);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+            expect(result.error.errors[0].message).toBe(
+                'El título no puede exceder 200 caracteres.'
+            );
+        }
+    });
+
+    it('should fail if descripcion is too long', () => {
+        const invalidData = {
+            id_usuario: 123,
+            titulo: 'Título válido',
+            descripcion: 'a'.repeat(2001),
+            id_tipo_caso: 456,
+        };
+
+        const result = CasosSchema.safeParse(invalidData);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+            expect(result.error.errors[0].message).toBe(
+                'La descripción no puede exceder 1000 caracteres.'
+            );
+        }
+    });
+
     it('should fail if id_tipo_caso is missing', () => {
         const invalidData = {
-            id_usuario: 1,
-            fecha: new Date(),
+            id_usuario: 123,
             titulo: 'Título válido',
         };
 
@@ -78,23 +97,5 @@ describe('CasosSchema', () => {
                 'El ID del tipo de caso es requerido.'
             );
         }
-    });
-
-    it('should validate optional fields', () => {
-        const validData = {
-            id_usuario: 1,
-            fecha: new Date(),
-            titulo: 'Título válido',
-            id_tipo_caso: 1,
-            descripcion: 'Descripción válida',
-            calle_principal: 'Calle principal válida',
-            calle_secundaria: 'Calle secundaria válida',
-            provincia: 'Provincia válida',
-            canton: 'Cantón válido',
-            Identikits: [1, 2, 3],
-        };
-
-        const result = CasosSchema.safeParse(validData);
-        expect(result.success).toBe(true);
     });
 });

@@ -1,62 +1,75 @@
-import { handleControllerError } from '../errors/apiResponseError';
-import { isOk } from '../errors/resultUtils';
-import {
-    createCaso,
-    deleteCaso,
-    getAllCasos,
-    getCasoById,
-    updateCaso,
-} from '../services/casos.service';
 import { Request, Response } from 'express';
+import { isErr } from '../errors/resultUtils';
+import { CasoService } from '../services/casos.service';
 
-export const crearCasoHandler = async (req: Request, res: Response) => {
-    const result = await createCaso(req.body);
-    if (isOk(result)) {
+const casoService = new CasoService();
+
+export class CasoController {
+    async createCaso(req: Request, res: Response): Promise<void> {
+        const result = await casoService.createCaso(req.body);
+
+        if (isErr(result)) {
+            res.status(400).json({ error: result.error.message });
+            return;
+        }
+
         res.status(201).json(result.value);
-    } else {
-        handleControllerError(res, result.error);
     }
-};
 
-export const obtenerCasoHandler = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id, 10);
-    const result = await getCasoById(id);
-    if (isOk(result)) {
-        res.status(200).json(result.value);
-    } else {
-        handleControllerError(res, result.error);
-    }
-};
+    async getCasos(req: Request, res: Response): Promise<void> {
+        const result = await casoService.getCasos();
 
-export const obtenerTodosCasosHandler = async (
-    _req: Request,
-    res: Response
-) => {
-    const result = await getAllCasos();
-    if (isOk(result)) {
-        res.status(200).json(result.value);
-    } else {
-        handleControllerError(res, result.error);
-    }
-};
+        if (isErr(result)) {
+            res.status(500).json({ error: result.error.message });
+            return;
+        }
 
-export const actualizarCasoHandler = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id, 10);
-    const data = { ...req.body, id_caso: id };
-    const result = await updateCaso(data);
-    if (isOk(result)) {
         res.status(200).json(result.value);
-    } else {
-        handleControllerError(res, result.error);
     }
-};
 
-export const eliminarCasoHandler = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id, 10);
-    const result = await deleteCaso(id);
-    if (isOk(result)) {
+    async getCasoById(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+
+        const result = await casoService.getCasoById(Number(id));
+
+        if (isErr(result)) {
+            res.status(500).json({ error: result.error.message });
+            return;
+        }
+
+        if (!result.value) {
+            res.status(404).json({ error: 'Caso no encontrado' });
+            return;
+        }
+
         res.status(200).json(result.value);
-    } else {
-        handleControllerError(res, result.error);
     }
-};
+
+    async updateCaso(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+
+        const result = await casoService.updateCaso(Number(id), req.body);
+
+        if (isErr(result)) {
+            res.status(400).json({ error: result.error.message });
+            return;
+        }
+
+        res.status(200).json(result.value);
+    }
+
+    async deleteCaso(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+
+        const result = await casoService.deleteCaso(Number(id));
+
+        if (isErr(result)) {
+            res.status(500).json({ error: result.error.message });
+            return;
+        }
+
+        res.status(204).json({
+            message: 'Caso eliminado con éxito',
+        });
+    }
+}
