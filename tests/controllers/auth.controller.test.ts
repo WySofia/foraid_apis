@@ -1,5 +1,3 @@
-// tests/controllers/auth.controller.test.ts
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { register, login, logout } from '../../src/controllers/auth.controller';
 import * as prismaModule from '../../src/db';
