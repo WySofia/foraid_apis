@@ -5,7 +5,6 @@ import { isErr, tryCatch } from '../errors/resultUtils';
 import { prisma } from '../db';
 import { handleError } from '../errors/errorUtils';
 import { CasosSchema } from '../models/casos.schema';
-import z from 'zod';
 
 const mapDataToCaso = (data: unknown): Result<Casos, CustomError> => {
     const parseResult = CasosSchema.safeParse(data);
