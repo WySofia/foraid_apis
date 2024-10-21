@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { CasoController } from '../controllers/casos.controller';
 import { auth } from '../middlewares/auth.middleware';
 
-const casosRouter = Router();
+export const casosRouter = Router();
 const casoController = new CasoController();
 
 casosRouter.post('/casos', auth, (req, res) =>
