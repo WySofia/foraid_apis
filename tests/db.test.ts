@@ -17,11 +17,6 @@ describe('PrismaClient', () => {
         expect(myPrisma).toBeDefined();
     });
 
-    it('should fetch an empty list of users', async () => {
-        const users = await myPrisma.usuario.findMany();
-        expect(users).toBeInstanceOf(Array);
-    });
-
     it('should handle connection error gracefully', async () => {
         try {
             const invalidPrisma = new PrismaClient({

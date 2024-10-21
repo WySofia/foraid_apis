@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { UsuarioSchema } from './usuario.schema';
 import { TipoCasoSchema } from './tipoCaso.schema';
 
-export const CasosSchema = z.object({
+export const CasosSchema: z.ZodSchema = z.object({
     id_caso: z.number().optional(),
 
     id_usuario: z.number({
@@ -10,15 +10,7 @@ export const CasosSchema = z.object({
         invalid_type_error: 'El ID del usuario debe ser un número válido.',
     }),
 
-    fecha: z
-        .preprocess((arg) => {
-            if (typeof arg === 'string' || arg instanceof Date) {
-                return new Date(arg);
-            }
-        }, z.any())
-        .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
-            message: 'La fecha debe ser una fecha válida.',
-        }),
+    fecha: z.string().optional(),
 
     titulo: z
         .string()
@@ -27,7 +19,7 @@ export const CasosSchema = z.object({
 
     descripcion: z
         .string()
-        .max(1000, {
+        .max(2000, {
             message: 'La descripción no puede exceder 1000 caracteres.',
         })
         .optional(),
@@ -63,6 +55,4 @@ export const CasosSchema = z.object({
 
     tipoCaso: TipoCasoSchema.optional(),
     usuario: UsuarioSchema.optional(),
-
-    Identikits: z.array(z.number()).optional(),
 });
