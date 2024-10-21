@@ -1,100 +1,97 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { prisma } from '../../src/db';
 import { CasoService } from '../../src/services/casos.service';
-import { isErr, isOk } from '../../src/errors/resultUtils';
-
-vi.mock('../../src/db', () => ({
-    prisma: {
-        casos: {
-            create: vi.fn(),
-            findMany: vi.fn(),
-            findUnique: vi.fn(),
-            update: vi.fn(),
-            delete: vi.fn(),
-        },
-    },
-}));
-
+import { err, ok } from '../../src/errors/result';
+import { isErr } from '../../src/errors/resultUtils';
 describe('CasoService', () => {
-    let casoService: CasoService;
+    const casoService = new CasoService();
 
     beforeEach(() => {
-        casoService = new CasoService();
-        vi.clearAllMocks();
+        vi.mock('../../src/db', () => ({
+            prisma: {
+                casos: {
+                    create: vi.fn(),
+                    findMany: vi.fn(),
+                    findUnique: vi.fn(),
+                    update: vi.fn(),
+                    delete: vi.fn(),
+                },
+            },
+        }));
     });
 
-    // it('should create a caso successfully', async () => {
-    //     const mockData = {};
-    //     const mockCaso = { id_caso: 1 };
-    //     (prisma.casos.create as vi.Mock).mockResolvedValue(mockCaso);
+    it('should create a caso successfully', async () => {
+        const mockData = {
+            id_usuario: 1,
+            titulo: 'Caso de prueba',
+            id_tipo_caso: 2,
+        };
+        prisma.casos.create.mockResolvedValue(mockData);
 
-    //     const result = await casoService.createCaso(mockData);
+        const result = await casoService.createCaso(mockData);
 
-    //     expect(isOk(result)).toBe(true);
-    //     if (isOk(result)) {
-    //         expect(result.value).toEqual(mockCaso);
-    //     }
-    // });
+        expect(result).toEqual(ok(mockData));
+    });
 
-    it('should return validation error when creating a caso with invalid data', async () => {
+    it('should return an error when createCaso fails due to validation', async () => {
         const invalidData = {};
 
         const result = await casoService.createCaso(invalidData);
 
-        expect(isErr(result)).toBe(true);
-        if (isErr(result)) {
-            expect(result.error.tag).toBe('ValidationError');
-        }
+        expect(result).toEqual(
+            err({
+                tag: 'ValidationError',
+                message: expect.any(String),
+                field: expect.any(String),
+            })
+        );
     });
 
     it('should get all casos successfully', async () => {
-        const mockCasos = [{ id_caso: 1 }];
-        (prisma.casos.findMany as vi.Mock).mockResolvedValue(mockCasos);
+        const mockCasos = [{}, {}];
+        prisma.casos.findMany.mockResolvedValue(mockCasos);
 
         const result = await casoService.getCasos();
 
-        expect(isOk(result)).toBe(true);
-        if (isOk(result)) {
-            expect(result.value).toEqual(mockCasos);
-        }
+        expect(result).toEqual(ok(mockCasos));
     });
 
-    it('should get a caso by id successfully', async () => {
-        const mockCaso = { id_caso: 1 };
-        (prisma.casos.findUnique as vi.Mock).mockResolvedValue(mockCaso);
+    it('should return a single caso by ID', async () => {
+        const mockCaso = {};
+        prisma.casos.findUnique.mockResolvedValue(mockCaso);
 
         const result = await casoService.getCasoById(1);
 
-        expect(isOk(result)).toBe(true);
-        if (isOk(result)) {
-            expect(result.value).toEqual(mockCaso);
-        }
+        expect(result).toEqual(ok(mockCaso));
     });
 
-    // it('should update a caso successfully', async () => {
-    //     const mockData = {
-    //         /* valid data according to CasosSchema */
-    //     };
-    //     const mockCaso: Casos = { id_caso: 1 /* other fields */ };
-    //     (prisma.casos.update as vi.Mock).mockResolvedValue(mockCaso);
+    it('should return null if no caso is found by ID', async () => {
+        prisma.casos.findUnique.mockResolvedValue(null);
 
-    //     const result = await casoService.updateCaso(1, mockData);
+        const result = await casoService.getCasoById(999);
 
-    //     expect(isOk(result)).toBe(true);
-    //     if (isOk(result)) {
-    //         expect(result.value).toEqual(mockCaso);
-    //     }
-    // });
+        expect(result).toEqual(ok(null));
+    });
+
+    it('should update a caso successfully', async () => {
+        const updatedCaso = {
+            id_usuario: 1,
+            titulo: 'Caso actualizado',
+            id_tipo_caso: 2,
+        };
+        prisma.casos.update.mockResolvedValue(updatedCaso);
+
+        const result = await casoService.updateCaso(1, updatedCaso);
+
+        expect(result).toEqual(ok(updatedCaso));
+    });
 
     it('should delete a caso successfully', async () => {
-        const mockCaso = { id_caso: 1 };
-        (prisma.casos.delete as vi.Mock).mockResolvedValue(mockCaso);
+        const deletedCaso = {};
+        prisma.casos.delete.mockResolvedValue(deletedCaso);
 
         const result = await casoService.deleteCaso(1);
 
-        expect(isOk(result)).toBe(true);
-        if (isOk(result)) {
-            expect(result.value).toEqual(mockCaso);
-        }
+        expect(result).toEqual(ok(deletedCaso));
     });
 });
