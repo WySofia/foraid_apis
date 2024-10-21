@@ -1,0 +1,478 @@
+openapi: 3.1.0
+info:
+  title: API de Gestión de Casos
+  version: 1.0.0
+  description: |
+    Esta API permite gestionar usuarios y casos, incluyendo autenticación, registro, y operaciones CRUD sobre los casos.
+  contact:
+    name: Tu Nombre
+    email: tu.email@ejemplo.com
+servers:
+  - url: https://api.tudominio.com/v1
+    description: Servidor de Producción
+  - url: http://localhost:3000/v1
+    description: Servidor de Desarrollo
+
+tags:
+  - name: Autenticación
+    description: Operaciones relacionadas con la autenticación de usuarios
+  - name: Casos
+    description: Operaciones CRUD para gestionar casos
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Usuario:
+      type: object
+      properties:
+        id_usuario:
+          type: integer
+          example: 1
+        nombre:
+          type: string
+          example: Juan
+        apellido:
+          type: string
+          example: Pérez
+        correo:
+          type: string
+          format: email
+          example: juan.perez@ejemplo.com
+        cargo:
+          type: string
+          example: Administrador
+        rango:
+          type: string
+          example: Senior
+      required:
+        - nombre
+        - apellido
+        - correo
+        - contrasenia_hash
+
+    UsuarioRegistro:
+      type: object
+      properties:
+        nombre:
+          type: string
+          example: Juan
+        apellido:
+          type: string
+          example: Pérez
+        correo:
+          type: string
+          format: email
+          example: juan.perez@ejemplo.com
+        contrasenia_hash:
+          type: string
+          format: password
+          example: "ContraseñaSegura123!"
+        cargo:
+          type: string
+          example: Administrador
+        rango:
+          type: string
+          example: Senior
+      required:
+        - nombre
+        - apellido
+        - correo
+        - contrasenia_hash
+
+    UsuarioLogin:
+      type: object
+      properties:
+        correo:
+          type: string
+          format: email
+          example: juan.perez@ejemplo.com
+        contrasenia_hash:
+          type: string
+          format: password
+          example: "ContraseñaSegura123!"
+      required:
+        - correo
+        - contrasenia_hash
+
+    TokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    
+    Caso:
+      type: object
+      properties:
+        id_caso:
+          type: integer
+          example: 1
+        id_usuario:
+          type: integer
+          example: 1
+        fecha:
+          type: string
+          format: date-time
+          example: "2023-10-20T14:48:00.000Z"
+        titulo:
+          type: string
+          example: Robo en la Provincia X
+        descripcion:
+          type: string
+          example: "Descripción detallada del caso..."
+        id_tipo_caso:
+          type: integer
+          example: 2
+        calle_principal:
+          type: string
+          example: "Avenida Central"
+        calle_secundaria:
+          type: string
+          example: "Calle 5"
+        provincia:
+          type: string
+          example: "Provincia Y"
+        canton:
+          type: string
+          example: "Cantón Z"
+      required:
+        - id_usuario
+        - fecha
+        - titulo
+        - id_tipo_caso
+
+    TipoCaso:
+      type: object
+      properties:
+        id_tipo_caso:
+          type: integer
+          example: 2
+        nombre:
+          type: string
+          example: "Robo"
+      required:
+        - nombre
+
+    MetodoCreacion:
+      type: object
+      properties:
+        id_metodo_creacion:
+          type: integer
+          example: 1
+        nombre:
+          type: string
+          example: "Manual"
+      required:
+        - nombre
+
+    Identikit:
+      type: object
+      properties:
+        id_identikit:
+          type: integer
+          example: 1
+        id_caso:
+          type: integer
+          example: 1
+        fecha_creacion:
+          type: string
+          format: date-time
+          example: "2023-10-20T14:48:00.000Z"
+        id_metodo_creacion:
+          type: integer
+          example: 1
+        imagen:
+          type: string
+          format: uri
+          example: "https://example.com/imagen.png"
+      required:
+        - id_caso
+        - fecha_creacion
+        - id_metodo_creacion
+
+    Caracteristica:
+      type: object
+      properties:
+        id_caracteristica:
+          type: integer
+          example: 1
+        id_identikit:
+          type: integer
+          example: 1
+        nombre_caracteristica:
+          type: string
+          example: "Color de ojos"
+        descripcion:
+          type: string
+          example: "Azules"
+      required:
+        - id_identikit
+        - nombre_caracteristica
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Descripción del error"
+
+  responses:
+    UnauthorizedError:
+      description: No autorizado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: Error de validación
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFoundError:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Autenticación
+      summary: Registrar un nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRegistro'
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/login:
+    post:
+      tags:
+        - Autenticación
+      summary: Iniciar sesión de un usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioLogin'
+      responses:
+        '200':
+          description: Inicio de sesión exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/logout:
+    post:
+      tags:
+        - Autenticación
+      summary: Cerrar sesión de un usuario
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Cierre de sesión exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/verify:
+    get:
+      tags:
+        - Autenticación
+      summary: Verificar el token de un usuario
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Token válido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /casos:
+    post:
+      tags:
+        - Casos
+      summary: Crear un nuevo caso
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Caso'
+      responses:
+        '201':
+          description: Caso creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Caso'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    get:
+      tags:
+        - Casos
+      summary: Obtener todos los casos
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de casos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Caso'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /casos/{id}:
+    get:
+      tags:
+        - Casos
+      summary: Obtener un caso por ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del caso
+      responses:
+        '200':
+          description: Detalles del caso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Caso'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Casos
+      summary: Actualizar un caso existente
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del caso
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Caso'
+      responses:
+        '200':
+          description: Caso actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Caso'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Casos
+      summary: Eliminar un caso por ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del caso
+      responses:
+        '204':
+          description: Caso eliminado exitosamente
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
